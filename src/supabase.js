@@ -1,5 +1,5 @@
-const SUPABASE_URL = 'SUPABASE_URL_PLACEHOLDER';
-const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_PLACEHOLDER';
+const SUPABASE_URL = 'https://fdirdrhveiagejtllybz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_18tdWr8QkAfRArPVh6sBpw_vDH4uq0k';
 
 let supabaseClient = null;
 let realtimeChannel = null;
