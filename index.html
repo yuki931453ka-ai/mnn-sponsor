@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#d4a017">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>MNN Sponsor Tracker</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <div class="header-inner">
+      <h1 class="app-title">MNN SPONSOR</h1>
+      <span class="header-sub">2026.10.24</span>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="app-main">
+    <!-- ダッシュボード -->
+    <section id="tab-dashboard" class="tab-panel active">
+      <div id="dashboard-content"></div>
+    </section>
+
+    <!-- カンバンボード -->
+    <section id="tab-kanban" class="tab-panel">
+      <div id="kanban-content"></div>
+    </section>
+
+    <!-- 企業一覧 -->
+    <section id="tab-list" class="tab-panel">
+      <div id="list-content"></div>
+    </section>
+
+    <!-- 協賛プラン -->
+    <section id="tab-plan" class="tab-panel">
+      <div class="plan-viewer">
+        <h2 class="section-title">パートナー企業プランメニュー</h2>
+        <div class="plan-image-wrap">
+          <img src="/assets/sponsor-plan.png" alt="MNN 2026 協賛プランメニュー" class="plan-image" loading="eager">
+        </div>
+      </div>
+    </section>
+
+    <!-- 企業詳細（動的） -->
+    <section id="tab-detail" class="tab-panel">
+      <div id="detail-content"></div>
+    </section>
+  </main>
+
+  <!-- 企業登録/編集モーダル -->
+  <dialog id="sponsor-dialog" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="sponsor-dialog-title">企業登録</h2>
+        <button class="modal-close" data-close-dialog="sponsor-dialog" aria-label="閉じる">✕</button>
+      </div>
+      <form id="sponsor-form" class="sponsor-form">
+        <input type="hidden" id="sf-id">
+
+        <label class="form-label">
+          社名 <span class="required">*</span>
+          <input type="text" id="sf-name" required autocomplete="organization">
+        </label>
+
+        <label class="form-label">
+          代表者/担当者名
+          <input type="text" id="sf-representative" autocomplete="name">
+        </label>
+
+        <label class="form-label">
+          業種
+          <select id="sf-industry">
+            <option value="">選択してください</option>
+          </select>
+        </label>
+
+        <label class="form-label">
+          所在地
+          <input type="text" id="sf-address" autocomplete="address-level1">
+        </label>
+
+        <div class="form-row">
+          <label class="form-label form-half">
+            電話番号
+            <input type="tel" id="sf-phone" autocomplete="tel">
+          </label>
+          <label class="form-label form-half">
+            メール
+            <input type="email" id="sf-email" autocomplete="email">
+          </label>
+        </div>
+
+        <fieldset class="form-fieldset">
+          <legend>優先度</legend>
+          <div class="segment-control" id="sf-priority">
+            <button type="button" class="seg-btn" data-value="high">★★★</button>
+            <button type="button" class="seg-btn active" data-value="mid">★★</button>
+            <button type="button" class="seg-btn" data-value="low">★</button>
+          </div>
+        </fieldset>
+
+        <div class="form-row">
+          <label class="form-label form-half">
+            協賛プラン
+            <select id="sf-plan">
+              <option value="undecided">未定</option>
+              <option value="diamond">ダイヤモンド (¥300,000)</option>
+              <option value="platinum">プラチナ (¥200,000)</option>
+              <option value="gold">ゴールド (¥150,000)</option>
+              <option value="silver">シルバー (¥80,000)</option>
+              <option value="support">応援 (¥10,000)</option>
+            </select>
+          </label>
+          <label class="form-label form-half">
+            協賛金額
+            <input type="number" id="sf-amount" min="0" step="1000" value="0">
+          </label>
+        </div>
+
+        <label class="form-label">
+          アプローチ理由
+          <textarea id="sf-approach-reason" rows="2"></textarea>
+        </label>
+
+        <label class="form-label">
+          関係性メモ
+          <textarea id="sf-relationship-memo" rows="2"></textarea>
+        </label>
+
+        <div class="form-row">
+          <label class="form-label form-half">
+            次回アクション
+            <input type="text" id="sf-next-action">
+          </label>
+          <label class="form-label form-half">
+            期日
+            <input type="date" id="sf-next-action-date">
+          </label>
+        </div>
+
+        <div id="sf-errors" class="form-errors" hidden></div>
+        <button type="submit" class="btn btn-primary btn-full">保存</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- 活動ログ入力モーダル -->
+  <dialog id="activity-dialog" class="modal modal-bottom">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>活動ログ追加</h2>
+        <button class="modal-close" data-close-dialog="activity-dialog" aria-label="閉じる">✕</button>
+      </div>
+      <form id="activity-form" class="activity-form">
+        <input type="hidden" id="af-sponsor-id">
+        <p class="form-sponsor-name" id="af-sponsor-name"></p>
+
+        <label class="form-label">
+          日付 <span class="required">*</span>
+          <input type="date" id="af-date" required>
+        </label>
+
+        <fieldset class="form-fieldset">
+          <legend>種別 <span class="required">*</span></legend>
+          <div class="log-type-selector" id="af-type">
+            <button type="button" class="log-type-btn" data-value="phone">📞 電話</button>
+            <button type="button" class="log-type-btn" data-value="visit">🏢 訪問</button>
+            <button type="button" class="log-type-btn" data-value="email">📧 メール</button>
+            <button type="button" class="log-type-btn" data-value="meeting">🤝 会議</button>
+            <button type="button" class="log-type-btn" data-value="other">📝 その他</button>
+          </div>
+        </fieldset>
+
+        <label class="form-label">
+          メモ
+          <textarea id="af-memo" rows="3" placeholder="活動内容を簡単に記録..."></textarea>
+        </label>
+
+        <div id="af-errors" class="form-errors" hidden></div>
+        <button type="submit" class="btn btn-primary btn-full">保存</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ステータス変更ボトムシート -->
+  <dialog id="status-dialog" class="modal modal-bottom">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ステータス変更</h2>
+        <button class="modal-close" data-close-dialog="status-dialog" aria-label="閉じる">✕</button>
+      </div>
+      <div id="status-options" class="status-options"></div>
+    </div>
+  </dialog>
+
+  <!-- 削除確認モーダル -->
+  <dialog id="confirm-dialog" class="modal">
+    <div class="modal-content">
+      <p id="confirm-message"></p>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" data-close-dialog="confirm-dialog">キャンセル</button>
+        <button class="btn btn-danger" id="confirm-ok">削除</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ボトムナビゲーション -->
+  <nav class="bottom-nav" aria-label="メインナビゲーション">
+    <button class="nav-btn active" data-tab="dashboard" aria-label="ダッシュボード">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">ダッシュ</span>
+    </button>
+    <button class="nav-btn" data-tab="kanban" aria-label="カンバン">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">カンバン</span>
+    </button>
+    <button class="nav-btn" data-tab="list" aria-label="一覧">
+      <span class="nav-icon">📃</span>
+      <span class="nav-label">一覧</span>
+    </button>
+    <button class="nav-btn" data-tab="plan" aria-label="プラン">
+      <span class="nav-icon">🎫</span>
+      <span class="nav-label">プラン</span>
+    </button>
+    <button class="nav-btn nav-btn-add" data-action="add-sponsor" aria-label="企業登録">
+      <span class="nav-icon">＋</span>
+      <span class="nav-label">登録</span>
+    </button>
+  </nav>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
