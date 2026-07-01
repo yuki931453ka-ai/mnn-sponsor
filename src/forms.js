@@ -90,6 +90,7 @@ function getFormData() {
     phone: document.getElementById('sf-phone').value.trim(),
     email: document.getElementById('sf-email').value.trim(),
     priority: priorityBtn?.dataset.value || 'mid',
+    status: document.getElementById('sf-status').value,
     plan: document.getElementById('sf-plan').value,
     amount: parseInt(document.getElementById('sf-amount').value, 10) || 0,
     approachReason: document.getElementById('sf-approach-reason').value.trim(),
@@ -107,6 +108,7 @@ function fillForm(sponsor) {
   document.getElementById('sf-address').value = sponsor.address || '';
   document.getElementById('sf-phone').value = sponsor.phone || '';
   document.getElementById('sf-email').value = sponsor.email || '';
+  document.getElementById('sf-status').value = sponsor.status || 'not_started';
   document.getElementById('sf-plan').value = sponsor.plan || 'undecided';
   document.getElementById('sf-amount').value = sponsor.amount || 0;
   document.getElementById('sf-approach-reason').value = sponsor.approachReason || '';
@@ -168,7 +170,6 @@ export function initSponsorForm() {
     if (isEdit) {
       updateSponsor(data.id, data);
     } else {
-      data.status = 'not_started';
       data.createdAt = new Date().toISOString();
       data.updatedAt = new Date().toISOString();
       addSponsor(data);
